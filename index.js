@@ -35,9 +35,7 @@ async function generateHTML(article) {
        - Lists and enumerations
        - Quotes or highlighted text
        - Natural content sections
-    </task>
-    
-    <rules>
+       
     2. Apply semantic HTML tags if needed:
        - <article> for the main container
        - <header> for introductory content
@@ -48,25 +46,28 @@ async function generateHTML(article) {
        - <blockquote> for quotes
        - <strong> and <em> for emphasis
        - You can use other tags if needed.
-       - You don't have to use all of them.
+    </task>
+
+    <rules>
+       1. ABSOLUTELY FORBIDDEN to change any part of the original content besides adding html tags.
+       2. UNDER NO CIRCUMSTANCES provide additional comments outside of the HTML output.
+       3. You don't have to use all of the tags from the list.
+       4. Ensure accessibility by using proper heading hierarchy and maintaining logical reading flow.
+    </rules>
     
-    3. Ensure accessibility by:
-       - Using proper heading hierarchy
-       - Maintaining logical reading flow
-    
-    4. Formatting requirements:
-       - Preserve all original text exactly as provided
+    <formatting requirements>
+       - Preserve all original text exactly as provided     
        - UNDER NO CIRCUMSTANCES provide additional comments outside of the HTML output.
        - Do not add any additional content
        - Use proper indentation for nested elements
        - Include appropriate spacing between sections
        - Validate HTML structure
-    </rules>
+    </formatting requirements>
     
-    <format>
+    <expected output>
     Return ONLY the properly formatted HTML with semantic structure and accessibility features.
     Do not use markdown syntax to present the content.
-    </format>
+    </expected output>
     `
 
     try {
@@ -89,7 +90,7 @@ async function generateHTML(article) {
     }
 }
 
-
+//add description under the images
 async function addImgTags(article) {
     const systemPrompt = `
     You are an expert at analyzing content and suggesting relevant images. 
@@ -148,7 +149,7 @@ async function addImgTags(article) {
                 },
                 {
                     role: 'user',
-                    content: `<article> ${article}</article>`
+                    content: `Article: ${article}`
                 }
             ]
         })
@@ -169,13 +170,11 @@ async function main() {
 
 main()
 
-
-// analyze article and sugest images in the content -> generate list of prompts for images
-// actualize html structure with <img src="" alt="prompt to generate image">
+// TODO:
 
 // save the output in the file article.html
-
-// funkcja pomocnicza mapująca przez tablice promptów i wysyłająca zapytanie do modelu o wygenerowanie obrazka?
-// zapisanie obrazków w folderze images
+// write a function that will take the article and the list of prompts and generate images for each prompt
+// save the images in the images folder
+// update the html file with the new images paths   
 
 
