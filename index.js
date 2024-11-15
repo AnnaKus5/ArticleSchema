@@ -11,7 +11,7 @@ const openai = new OpenAI({
 
 const CONFIG = {
     ARTICLE_URL: 'https://cdn.oxido.pl/hr/Zadanie%20dla%20JJunior%20AI%20Developera%20-%20tresc%20artykulu.txt',
-    ARTICLE_PATH: 'article.txt',
+    ARTICLE_PATH: './source/article.txt',
     OUTPUT_PATH: 'artykul.html',
     MODEL: 'gpt-4o'
 }

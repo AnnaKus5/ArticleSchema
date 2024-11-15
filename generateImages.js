@@ -75,7 +75,7 @@ function updateArticleWithImages(article, prompts) {
 }
 
 async function mainWithImages() { 
-    const article = fs.readFileSync('article.html', 'utf8')
+    const article = fs.readFileSync('artykul.html', 'utf8')
     const prompts = await findImagesPrompts(article)
     await generateImages(prompts) 
     const updatedArticle = updateArticleWithImages(article, prompts)
