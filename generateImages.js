@@ -75,8 +75,8 @@ function updateArticleWithImages(article, prompts) {
         }
     }
     
-    // Return the modified HTML as a string
-    return doc.documentElement.outerHTML
+    const articleElement = doc.querySelector('article')
+    return articleElement ? articleElement.innerHTML : doc.documentElement.outerHTML
 }
 
 async function mainWithImages() { 
