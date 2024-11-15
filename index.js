@@ -9,21 +9,25 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 })
 
-const url = 'https://cdn.oxido.pl/hr/Zadanie%20dla%20JJunior%20AI%20Developera%20-%20tresc%20artykulu.txt'
+const articlePath = 'article.txt'
 
-
-async function fetchArticle(url) {
-    const response = await axios.get(url)
-    return response.data
+// additional functions to fetch and save the article from url
+async function fetchArticle() {
+    const url = 'https://cdn.oxido.pl/hr/Zadanie%20dla%20JJunior%20AI%20Developera%20-%20tresc%20artykulu.txt'
+    try {
+        const response = await axios.get(url)
+        return response.data
+    } catch (error) {
+        console.error('Error fetching article:', error)
+    }
 }
 
 async function saveArticle(article) {
     fs.writeFileSync('article.txt', article)
 }
 
-
+// generate HTML from the article
 async function generateHTML(article) {
-
     const systemPrompt = `
     You are an expert HTML formatter specializing in semantic structure and accessibility.
     Your task is to convert plain text articles into well-structured, semantic HTML.
@@ -55,14 +59,14 @@ async function generateHTML(article) {
        4. Ensure accessibility by using proper heading hierarchy and maintaining logical reading flow.
     </rules>
     
-    <formatting requirements>
+    <format>
        - Preserve all original text exactly as provided     
        - UNDER NO CIRCUMSTANCES provide additional comments outside of the HTML output.
        - Do not add any additional content
        - Use proper indentation for nested elements
        - Include appropriate spacing between sections
        - Validate HTML structure
-    </formatting requirements>
+    </format>
     
     <expected output>
     Return ONLY the properly formatted HTML with semantic structure and accessibility features.
@@ -90,45 +94,65 @@ async function generateHTML(article) {
     }
 }
 
-//add description under the images
+// add images to the article
 async function addImgTags(article) {
     const systemPrompt = `
     You are an expert at analyzing content and suggesting relevant images. 
 
     <task>
-    Ensure HTML articles include strategic <img> tags with specific alt text prompts for image generation, seamlessly integrated without altering existing content.
+    Ensure HTML articles include strategic <figure> elements containing <img> tags and <figcaption> elements, seamlessly integrated without altering existing content.
     The style of the images should match the article's content.
-    The sole purpose is to analyze article content to insert <img> tags with descriptive alt text, fitting naturally into the flow and preserving all other content.
+    The sole purpose is to analyze article content to insert image elements with AI image generation prompts as alt text and meaningful captions that relate to the article's themes.
     </task>
 
     <rules>
-    1. ABSOLUTELY FORBIDDEN to change any part of the original content besides adding <img> tags.
+    1. ABSOLUTELY FORBIDDEN to change any part of the original content besides adding image-related elements.
     2. UNDER NO CIRCUMSTANCES provide additional comments outside of the HTML output.
     3. Analyze content to identify key points where images enhance understanding.
-    4. ALT attributes must be specific, descriptive, and contextually accurate image prompts.
-    5. Limit the number of <img> tags to a range of 3-5 for optimal impact.
+    4. ALT attributes MUST contain specific prompts suitable for AI image generation (like DALL-E or Stable Diffusion).
+    5. Limit the number of image insertions to a range of 3-5 for optimal impact.
+    6. Each image must be wrapped in a <figure> element with both an <img> and a <figcaption>.
+    7. Figcaptions should provide meaningful descriptions in Polish that connect the image to the article's key messages and themes, while alt text should be optimized for AI image generation.
     </rules>
+
+    <alt text guidelines>
+    - Format alt text as clear, detailed image generation prompts
+    - Include style specifications (e.g., "digital art style", "photorealistic", "3D render")
+    - Specify important details like perspective, lighting, and composition
+    - Keep prompts concise but descriptive enough for accurate image generation
+    - Ensure the generated image will support and enhance the article's message
+    </alt text guidelines>
 
     <examples>
     USER: <article><h1>Solar System</h1><p>The solar system consists of the sun and astronomical objects.</p></article>
-    AI: <article><h1>Solar System</h1><p>The solar system consists of the sun and astronomical objects.</p><img src="" alt="illustration of the solar system including the sun and planets"></article>
+    AI: <article><h1>Solar System</h1><p>The solar system consists of the sun and astronomical objects.</p>
+    <figure>
+        <img src="" alt="3D render of the solar system, dramatic lighting, photorealistic, showing sun at center with all 8 planets orbiting, cosmic background with stars, high detail">
+        <figcaption>Układ słoneczny jako przykład złożonego systemu, gdzie wszystkie elementy współpracują ze sobą w harmonii</figcaption>
+    </figure></article>
 
     USER: <article><h2>Photosynthesis Process</h2><p>Photosynthesis converts light energy into chemical energy in plants.</p></article>
-    AI: <article><h2>Photosynthesis Process</h2><p>Photosynthesis converts light energy into chemical energy in plants.</p><img src="" alt="diagram of the photosynthesis process showing light energy conversion"></article>
+    AI: <article><h2>Photosynthesis Process</h2><p>Photosynthesis converts light energy into chemical energy in plants.</p>
+    <figure>
+        <img src="" alt="digital illustration, cross-section of a green leaf showing photosynthesis process, sunlight beams entering leaf cells, chloroplasts visible, educational diagram style, vibrant colors">
+        <figcaption>Proces fotosyntezy jako przykład naturalnej transformacji energii, podobnie jak AI przekształca dane w użyteczne informacje</figcaption>
+    </figure></article>
 
     USER: <article><p>History of the internet</p><h2>Origins</h2><p>The internet began as ARPANET.</p></article>
-    AI: <article><p>History of the internet</p><h2>Origins</h2><p>The internet began as ARPANET.</p><img src="" alt="historical image of ARPANET network map"></article>
-
-    USER: <article><p>Cats are popular pets</p></article>
-    AI: <article><p>Cats are popular pets</p><img src="" alt="popular cat breeds sitting together"></article>
-
-    USER: <article><p>Robots in modern industry</p></article>
-    AI: <article><p>Robots in modern industry</p><img src="" alt="robotic arms working in a factory assembly line"></article>
+    AI: <article><p>History of the internet</p><h2>Origins</h2><p>The internet began as ARPANET.</p>
+    <figure>
+        <img src="" alt="retro-style technical diagram, ARPANET network map circa 1970s, showing connected computer nodes and institutions, vintage computer aesthetic, muted colors, technical drawing style">
+        <figcaption>Początki internetu jako przykład ewolucji technologii, pokazujący jak innowacje prowadzą do przełomowych zmian w społeczeństwie</figcaption>
+    </figure></article>
     </examples>
     
     <format>
-    Ensure each <img> tag is neatly integrated into the HTML structure, matching the article's context and flow.
-    Return ONLY the properly formatted HTML with semantic structure and accessibility features.
+    - Wrap each image in a <figure> element
+    - Include <img> with AI generation prompts as alt text
+    - Include <figcaption> with human-readable descriptions
+    - Ensure proper HTML structure and indentation
+    - Place figures at logical breaks in the content
+    - Return ONLY the properly formatted HTML
     Do not use markdown syntax to present the content.
     </format>
     `
@@ -153,28 +177,30 @@ async function addImgTags(article) {
                 }
             ]
         })
-        console.log("HTML with img tags:", response.choices[0].message.content)
         return response.choices[0].message.content
     } catch (error) {
         console.error('Error during adding img tags:', error)
     }
 }
 
-async function main() {
-    const article = await fetchArticle(url)
-    await saveArticle(article)
+// remove unnecessary markdown syntax from the output (in some cases it's needed)
+function validateOutput(article) {
+    const cleanedArticle = article.replace(/^```html\n|\n```$/g, '')
+    return cleanedArticle
+}   
+
+async function main(articlePath) {
+    // const article = await fetchArticle(url)
+    // await saveArticle(article)
+    const article = fs.readFileSync(articlePath, 'utf8')
     const htmlArticle = await generateHTML(article)
-    console.log('HTML Article:', htmlArticle)
-    await addImgTags(htmlArticle)
+    // console.log('HTML Article:', htmlArticle)
+    const imgArticle = await addImgTags(htmlArticle)
+    const validatedArticle = await validateOutput(imgArticle)
+    // console.log('Validated Article:', validatedArticle)
+    fs.writeFileSync('article.html', validatedArticle)
 }
-
-main()
-
-// TODO:
-
-// save the output in the file article.html
-// write a function that will take the article and the list of prompts and generate images for each prompt
-// save the images in the images folder
-// update the html file with the new images paths   
+ 
+main(articlePath)
 
 
