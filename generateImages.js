@@ -55,28 +55,23 @@ async function generateImages(prompts) {
 }
 
 function updateArticleWithImages(article, prompts) {
-
     const dom = new JSDOM(article)
     const doc = dom.window.document
 
-    
     for (const prompt of prompts) {
- 
         const filename = `images/${prompt.prompt.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`
-        
         const imgElements = doc.getElementsByTagName('img')
         
-        // Find the matching img by comparing alt text
         for (const img of imgElements) {
             if (img.getAttribute('alt') === prompt.prompt) {
                 img.setAttribute('src', filename)
-                break // Found the matching image, no need to continue inner loop
+                break
             }
         }
     }
     
     const articleElement = doc.querySelector('article')
-    return articleElement ? articleElement.innerHTML : doc.documentElement.outerHTML
+    return articleElement ? articleElement.outerHTML : doc.documentElement.outerHTML
 }
 
 async function mainWithImages() { 
