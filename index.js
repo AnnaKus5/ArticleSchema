@@ -9,24 +9,30 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 })
 
-const articlePath = 'article.txt'
+const CONFIG = {
+    ARTICLE_URL: 'https://cdn.oxido.pl/hr/Zadanie%20dla%20JJunior%20AI%20Developera%20-%20tresc%20artykulu.txt',
+    ARTICLE_PATH: 'article.txt',
+    OUTPUT_PATH: 'article.html',
+    MODEL: 'gpt-4o'
+}
 
 // additional functions to fetch and save the article from url
 async function fetchArticle() {
-    const url = 'https://cdn.oxido.pl/hr/Zadanie%20dla%20JJunior%20AI%20Developera%20-%20tresc%20artykulu.txt'
+    const url = CONFIG.ARTICLE_URL
     try {
         const response = await axios.get(url)
         return response.data
     } catch (error) {
         console.error('Error fetching article:', error)
+        throw error
     }
 }
 
 async function saveArticle(article) {
-    fs.writeFileSync('article.txt', article)
+    fs.writeFileSync(CONFIG.ARTICLE_PATH, article)
 }
 
-// generate HTML from the article
+// generate HTML structure from the article
 async function generateHTML(article) {
     const systemPrompt = `
     You are an expert HTML formatter specializing in semantic structure and accessibility.
@@ -76,7 +82,7 @@ async function generateHTML(article) {
 
     try {
         const response = await openai.chat.completions.create({
-            model: 'gpt-4o',
+            model: CONFIG.MODEL,
             messages: [
                 {
                     role: 'system',
@@ -165,7 +171,7 @@ async function addImgTags(article) {
 
     try {
         const response = await openai.chat.completions.create({
-            model: 'gpt-4o',
+            model: CONFIG.MODEL,
             messages: [
                 {
                     role: 'system',
@@ -189,18 +195,38 @@ function validateOutput(article) {
     return cleanedArticle
 }   
 
+// Add basic validation for empty article
+function validateArticle(article) {
+    if (!article || typeof article !== 'string') {
+        throw new Error('Invalid article format')
+    }
+    if (article.length === 0) {
+        throw new Error('Empty article')
+    }
+    return true
+}
+
 async function main(articlePath) {
-    // const article = await fetchArticle(url)
-    // await saveArticle(article)
-    const article = fs.readFileSync(articlePath, 'utf8')
-    const htmlArticle = await generateHTML(article)
-    // console.log('HTML Article:', htmlArticle)
-    const imgArticle = await addImgTags(htmlArticle)
-    const validatedArticle = await validateOutput(imgArticle)
-    // console.log('Validated Article:', validatedArticle)
-    fs.writeFileSync('article.html', validatedArticle)
+    try {
+        const article = fs.readFileSync(articlePath, 'utf8')
+        validateArticle(article)
+        
+        const htmlArticle = await generateHTML(article)
+        if (!htmlArticle) throw new Error('HTML generation failed')
+        
+        const imgArticle = await addImgTags(htmlArticle)
+        if (!imgArticle) throw new Error('Image tags addition failed')
+        
+        const validatedArticle = validateOutput(imgArticle)
+        
+        await fs.promises.writeFile(CONFIG.OUTPUT_PATH, validatedArticle)
+        console.log('Article processing completed successfully')
+    } catch (error) {
+        console.error('Error processing article:', error)
+        process.exit(1)
+    }
 }
  
-main(articlePath)
+main(CONFIG.ARTICLE_PATH)
 
 

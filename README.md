@@ -1,6 +1,6 @@
 # AI-Powered Article HTML Converter
 
-This project converts plain text articles into semantically structured HTML with AI-generated image suggestions. It uses OpenAI's GPT-4 for content analysis and structure generation.
+This project converts plain text articles into semantically structured HTML with AI-generated image suggestions. It uses OpenAI's GPT-4o for content analysis and structure generation.
 
 ## Features
 
@@ -12,13 +12,13 @@ This project converts plain text articles into semantically structured HTML with
 - Automated image generation (optional feature)
 
 ## Project Structure
-project/
-├── index.js # Main application file
-├── generateImages.js # Optional image generation automation
-├── .env # Environment variables
-├── article.txt # Input article file
-└── article.html # Output HTML file
-
+```bash
+index.js # Main application file
+generateImages.js # Optional image generation automation
+.env # Environment variables
+article.txt # Input article file
+article.html # Output HTML file
+```
 
 ## Prerequisites
 
@@ -89,7 +89,7 @@ const CONFIG = {
     ARTICLE_URL: 'https://example.com/article.txt',
     ARTICLE_PATH: 'article.txt',
     OUTPUT_PATH: 'article.html',
-    MODEL: 'gpt-4'
+    MODEL: 'gpt-4o'
 }
 ```
 
