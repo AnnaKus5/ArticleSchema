@@ -55,7 +55,7 @@ OPENAI_API_KEY=your_api_key_here
 node index.js
 ```
 
-3. The processed HTML will be saved to `article.html`
+3. The processed HTML will be saved to `article.html`. You can paste it into `podglad.html` to preview the result.
 
 ### Image Generation (generateImages.js)
 
@@ -64,6 +64,7 @@ This is an optional feature to automate the generation of images based on the AI
 ```bash
 node generateImages.js
 ```
+Output images will be saved in the `images` folder. Updates article will be saved in `articleWithImages.html`.
 
 ## Environment Variables
 

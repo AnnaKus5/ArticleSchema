@@ -124,10 +124,12 @@ async function addImgTags(article) {
 
     <alt text guidelines>
     - Format alt text as clear, detailed image generation prompts
-    - Include style specifications (e.g., "digital art style", "photorealistic", "3D render")
+    - Maintain consistent visual style across all images in the article
+    - Choose a style that matches the content's tone and purpose (e.g., all images in modern digital art style for tech topics)
     - Specify important details like perspective, lighting, and composition
     - Keep prompts concise but descriptive enough for accurate image generation
     - Ensure the generated image will support and enhance the article's message
+    - Use the same artistic style keywords in all image prompts for visual coherence
     </alt text guidelines>
 
     <examples>
