@@ -12,7 +12,7 @@ const openai = new OpenAI({
 const CONFIG = {
     ARTICLE_URL: 'https://cdn.oxido.pl/hr/Zadanie%20dla%20JJunior%20AI%20Developera%20-%20tresc%20artykulu.txt',
     ARTICLE_PATH: 'article.txt',
-    OUTPUT_PATH: 'article.html',
+    OUTPUT_PATH: 'artykul.html',
     MODEL: 'gpt-4o'
 }
 
@@ -116,9 +116,10 @@ async function addImgTags(article) {
     2. UNDER NO CIRCUMSTANCES provide additional comments outside of the HTML output.
     3. Analyze content to identify key points where images enhance understanding.
     4. ALT attributes MUST contain specific prompts suitable for AI image generation (like DALL-E or Stable Diffusion).
-    5. Limit the number of image insertions to a range of 3-5 for optimal impact.
-    6. Each image must be wrapped in a <figure> element with both an <img> and a <figcaption>.
-    7. Figcaptions should provide meaningful descriptions in Polish that connect the image to the article's key messages and themes, while alt text should be optimized for AI image generation.
+    5. SRC attribute MUST be "image_placeholder.jpg"
+    6. Limit the number of image insertions to a range of 3-5 for optimal impact.
+    7. Each image must be wrapped in a <figure> element with both an <img> and a <figcaption>.
+    8. Figcaptions should provide meaningful descriptions in Polish that connect the image to the article's key messages and themes, while alt text should be optimized for AI image generation.
     </rules>
 
     <alt text guidelines>
