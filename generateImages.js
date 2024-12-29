@@ -79,7 +79,7 @@ async function mainWithImages() {
     const prompts = await findImagesPrompts(article)
     await generateImages(prompts) 
     const updatedArticle = updateArticleWithImages(article, prompts)
-    fs.writeFileSync('articleWithImages.html', updatedArticle)
+    fs.writeFileSync('artykul.html', updatedArticle)
 }
 
 mainWithImages()
